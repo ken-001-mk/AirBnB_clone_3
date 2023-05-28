@@ -75,7 +75,44 @@ class DBStorage:
         """call remove() method on the private session attribute"""
         self.__session.remove()
 
-def get(self, cls, id):
+    def get_amenities_by_place(place_id):
+        place = storage.get(Place, place_id)
+        if place is None:
+            abort(404)
+        amenities = [amenity.to_dict() for amenity in place.amenities]
+        return jsonify(amenities)
+
+
+    def link_amenity_to_place(place_id, amenity_id):
+        place = storage.get(Place, place_id)
+        if place is None:
+            abort(404)
+        amenity = storage.get(Amenity, amenity_id)
+        if amenity is None:
+            abort(404)
+        if amenity in place.amenities:
+            return jsonify(amenity.to_dict()), 200
+            place.amenities.append(amenity)
+            storage.save()
+        return jsonify(amenity.to_dict()), 201
+
+
+   def delete_amenity_from_place(place_id, amenity_id):
+        place = storage.get(Place, place_id)
+        if place is None:
+            abort(404)
+        amenity = storage.get(Amenity, amenity_id)
+        if amenity is None:
+            abort(404)
+        if amenity not in place.amenities:
+            abort(404)
+            place.amenities.remove(amenity)
+            storage.delete(amenity)
+            storage.save()
+        return jsonify({}), 200
+
+
+    def get(self, cls, id):
         """Retrieve one object from storage."""
         if cls in self.__session:
             objects = self.__session[cls]
@@ -84,7 +121,7 @@ def get(self, cls, id):
                     return obj
         return None
 
- def count(self, cls=None):
+    def count(self, cls=None):
         """Count the number of objects in storage."""
         if cls is None:
             return sum(len(objects) for objects in self.__session.values())

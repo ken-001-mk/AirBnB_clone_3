@@ -69,7 +69,19 @@ class FileStorage:
         """call reload() method for deserializing the JSON file to objects"""
         self.reload()
 
-def get(self, cls, id):
+    def get_amenities_by_place(place_id):
+        place = storage.get(Place, place_id)
+        if place is None:
+            abort(404)
+        amenities = [storage.get(Amenity, amenity_id).to_dict() for amenity_id in place.amenity_ids]
+        return jsonify(amenities)
+
+
+    def link_amenity_to_place(place_id, amenity_id):
+        place = storage.get
+
+
+    def get(self, cls, id):
         """Retrieve one object from storage."""
         file_path = self.__file_path(cls)
         if file_path and os.path.isfile(file_path):
@@ -79,7 +91,7 @@ def get(self, cls, id):
                     return objects[id]
         return None
 
-def count(self, cls=None):
+    def count(self, cls=None):
         """Count the number of objects in storage."""
         count = 0
         if cls is None:
